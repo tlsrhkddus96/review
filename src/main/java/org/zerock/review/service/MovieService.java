@@ -2,6 +2,8 @@ package org.zerock.review.service;
 
 import org.zerock.review.dto.MovieDTO;
 import org.zerock.review.dto.MovieImageDTO;
+import org.zerock.review.dto.PageRequestDTO;
+import org.zerock.review.dto.PageResultDTO;
 import org.zerock.review.entity.Movie;
 import org.zerock.review.entity.MovieImage;
 
@@ -13,6 +15,11 @@ import java.util.stream.Collectors;
 public interface MovieService {
 
     Long register(MovieDTO movieDTO);
+
+    PageResultDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO);
+
+    MovieDTO getMovie(Long mno);
+
 
     default Map<String, Object> dtoToEntity(MovieDTO movieDTO){
 
@@ -44,6 +51,31 @@ public interface MovieService {
         }
 
         return entityMap;
+
+    }
+
+    default MovieDTO entitiesToDTO(Movie movie, List<MovieImage> movieImages, Double avg, Long reviewCnt){
+
+        MovieDTO movieDTO = MovieDTO.builder()
+                .mno(movie.getMno())
+                .title(movie.getTitle())
+                .regDate(movie.getRegDate())
+                .modDate(movie.getModDate())
+                .build();
+
+        List<MovieImageDTO> movieImageDTOList = movieImages.stream().map(movieImage -> {
+            return MovieImageDTO.builder()
+                    .imgName(movieImage.getImgName())
+                    .path(movieImage.getPath())
+                    .uuid(movieImage.getUuid())
+                    .build();
+        }).collect(Collectors.toList());
+
+        movieDTO.setImageDTOList(movieImageDTOList);
+        movieDTO.setAvg(avg);
+        movieDTO.setReviewCnt(reviewCnt.intValue());
+
+        return movieDTO;
 
     }
 
