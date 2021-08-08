@@ -101,16 +101,20 @@ public class UploadController {
 
 
     @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(String fileName){
+    public ResponseEntity<byte[]> getFile(String fileName, String size){
 
         ResponseEntity<byte[]> result = null;
 
         try{
-            String srcFileNmae = URLDecoder.decode(fileName,"UTF-8");
+            String srcFileName = URLDecoder.decode(fileName,"UTF-8");
 
-            log.info("fileName : " + srcFileNmae);
+            log.info("fileName : " + srcFileName);
 
-            File file = new File(uploadPath + File.separator + srcFileNmae);
+            File file = new File(uploadPath + File.separator + srcFileName);
+
+            if(size !=null && size.equals("1")){
+                file = new File(file.getParent(), file.getName().substring(2));
+            }
 
             log.info("file : " + file);
 
